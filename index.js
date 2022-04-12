@@ -50,7 +50,7 @@ cctLED1Accessory.prototype = {
         return [infoService, this.bulb];
     },    
     getPower: function(callback) {
-        this.log('getPower');
+        //this.log('getPower');
 
         // read white 2
         let req = http.get('http://192.168.1.191/white/2', res => {
@@ -59,8 +59,10 @@ cctLED1Accessory.prototype = {
             res.on('end', () => {
                 // recv_data contains volume info.
                 let vol = JSON.parse(recv_data).brightness; // vol = [0,100]
-                this.log('white 3: ' + vol);
+                let power = JSON.parse(recv_data).power;
+                this.log('white 3: ' + vol + ';' + 'power 3: ' + power);
                 this.vol = vol;
+                this.power = power;
 
                 callback(null, this.vol > 0);
             });
@@ -83,10 +85,10 @@ cctLED1Accessory.prototype = {
 
         let toSend = '{"brightness": ' + new_vol + '}';
         let options = {
-            host: 'localhost',
+            host: '192.168.1.191',
             port: 80,
             path: '/white/'+'2',
-            method: 'POST',
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'Content-Length': toSend.length
