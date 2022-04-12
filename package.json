@@ -1,8 +1,9 @@
 {
     "name": "homebridge-ShellyRGBW2toCCT",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "Description for Homebridge Tutorial",
-    "license": "iglooSmart.com",
+    "author": "AnsonFung@igloosmart.com",
+    "license": "MIT",
     "keywords": [
       "homebridge-plugin",
       "shelly",
