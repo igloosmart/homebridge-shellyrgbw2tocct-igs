@@ -83,29 +83,25 @@ cctLED1Accessory.prototype = {
             new_vol = on ? this.defaultVolume : 0;
         }
 
-        let toSend = '{"brightness": ' + new_vol + '}';
-        let options = {
-            host: '192.168.1.191',
-            port: 80,
-            path: '/white/'+'2',
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Content-Length': toSend.length
-            }
-        }
-
-        let req = http.request(options, res => {
+        let req = http.get('http://192.168.1.191/white/2?brightness='+new_vol, res => {
             let recv_data = '';
-            res.on('data', chunk => {recv_data += chunk})
-        });
+            res.on('data', chunk => { recv_data += chunk});
+            res.on('end', () => {
+                // recv_data contains volume info.
+                let vol = JSON.parse(recv_data).brightness; // vol = [0,100]
+                let power = JSON.parse(recv_data).power;
+                this.log('white 3: ' + vol + ';' + 'power 3: ' + power);
+                this.vol = vol;
+                this.power = power;
 
-        req.on('error', err=>{
-            this.log('Error in setPower:' + err.message);
+                callback(null, this.vol > 0);
+            });
+        });
+        req.on('error', err => {
+            this.log("Error in getPower: "+ err.message);
             callback(err);
-        });
+        })
 
-        req.end(toSend)
         this.log('Request sent to set volume to ' + new_vol)
         this.vol = new_vol;
 

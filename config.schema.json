@@ -1,4 +1,4 @@
-{
+  {
     "pluginAlias": "homebridge-shellyrgbw2tocct-igs",
     "pluginType": "platform",
     "singular": true,
@@ -6,10 +6,10 @@
       "type": "object",
       "properties": {
         "name": {
-          "title": "Device IP",
+          "title": "Accessory",
           "type": "string",
           "required": true,
-          "default": "192.168.1.191"
+          "default": "CCT1"
         }
       }
     }
