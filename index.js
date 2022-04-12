@@ -84,7 +84,7 @@ cctLED1Accessory.prototype = {
         let toSend = '{"brightness": ' + new_vol + '}';
         let options = {
             host: 'localhost',
-            port: 5000,
+            port: 80,
             path: '/white/'+'2',
             method: 'POST',
             headers: {
