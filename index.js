@@ -8,7 +8,7 @@ module.exports = function (homebridge) {
 
     api = homebridge;
 
-    homebridge.registerAccessory('shellyrgbw2tocctigs', 'CCT-LED1', cctLED1Accessory);
+    homebridge.registerAccessory('homebridge-shellyrgbw2tocct-igs', 'CCT-LED1', cctLED1Accessory);
 };
 
 function cctLED1Accessory(log, config) {
