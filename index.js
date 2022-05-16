@@ -1,152 +1,76 @@
 "use strict";
 
-let Service, Characteristic;
-const http = require('http');   // HTTP POST / GET method.
-const { SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION } = require('constants');
+let Service, Characteristic, api;
+
+const _http_base = require("homebridge-http-base");
+const http = _http_base.http;
+const configParser = _http_base.configParser;
+const PullTimer = _http_base.PullTimer;
+const notifications = _http_base.notifications;
+const MQTTClient = _http_base.MQTTClient;
+const Cache = _http_base.Cache;
+const utils = _http_base.utils;
+
+const packageJSON = require("./package.json");
+
 
 module.exports = function (homebridge) {
     Service = homebridge.hap.Service;
     Characteristic = homebridge.hap.Characteristic;
+
+    api = homebridge;
+
     homebridge.registerAccessory('homebridge-shellyrgbw2tocct-igs', 'CCT-LED1', cctLED1Accessory);
     //homebridge.registerAccessory('homebridge-shellyrgbw2tocct-igs', 'CCT-LED2', cctLED2Accessory);
 };
 
-function cctLED1Accessory(log, config, api) {
+function cctLED1Accessory(log, config) {
     this.log = log;
-    this.config = config;
-    this.homebridge = api;
+    this.name = config.name;
+    this.debug = config.debug || false;
 
-    if (this.config.defaultVolume)
-        this.defaultVolume = this.config.defaultVolume;
-    else
-        this.defaultVolume = 1;
+    const success = this.parseCharacteristics(config);
+    if (!success) {
+        this.log.warn("Aborting...");
+        return;
+    }
 
-    if (this.config.refreshInterval)
-        this.refreshInterval = this.config.refreshInterval;
-    else
-        this.refreshInterval = 1000;
-
-    this.bulb = new Service.Lightbulb(this.config.name);
-    // Set up Event Handler for bulb on/off
-    this.bulb.getCharacteristic(Characteristic.On)
-        .on("get", this.getPower.bind(this))
-        .on("set", this.setPower.bind(this));
-    this.bulb.getCharacteristic(Characteristic.Brightness)
-        .on("get", this.getVolume.bind(this))
-        .on("set", this.setVolume.bind(this));
-
-    // polling
-    this.timer = setTimeout(this.poll.bind(this), this.refreshInterval);
-};
+    const homebridgeService = new Service.Lightbulb(this.name);
+    homebridgeService.getCharacteristic(Characteristic.On)
+        .on("get", this.getPowerState.bind(this))
+        .on("set", this.setPowerState.bind(this));
+    homebridgeService.addCharacteristic(Characteristic.Brightness)
+        .on("get", this.getBrightness.bind(this))
+        .on("set", this.setBrightness.bind(this));
+    homebridgeService.addCharacteristic(Characteristic.ColorTemperature)
+        .on("get", this.getColorTemperature.bind(this))
+        .on("set", this.setColorTemperature.bind(this))
+        .setProps({
+            minValue: this.colorTemperature.minValue,
+            maxValue: this.colorTemperature.maxValue
+        });
+}
 
 cctLED1Accessory.prototype = {
-    getServices: function() {
-        if (!this.bulb) return [];
-        const infoService =  
-            new Service.AccessoryInformation();
-        infoService
-            .setCharacteristic(Characteristic.Manufacturer,
-                'Shelly')
-        return [infoService, this.bulb];
-    },    
-    getPower: function(callback) {
-        //this.log('getPower');
-
-        // read white 2
-        let req = http.get('http://192.168.0.190/white/2', res => {
-            let recv_data = '';
-            res.on('data', chunk => { recv_data += chunk});
-            res.on('end', () => {
-                // recv_data contains volume info.
-                let vol = JSON.parse(recv_data).brightness; // vol = [0,100]
-                let power = JSON.parse(recv_data).power;
-                this.log('white 3: ' + vol + ';' + 'power 3: ' + power);
-                this.vol = vol;
-                this.power = power;
-
-                callback(null, this.vol > 0);
-            });
-        });
-        req.on('error', err => {
-            this.log("Error in getPower: "+ err.message);
-            callback(err);
-        })
+    getPowerState: function(callback){
+        return;
     },
-    setPower: function(on, callback) {
-        let new_vol;
-        if(this.triggeredby=='slider') {
-            this.log('setPower triggered by slider')
-            new_vol = this.vol;
-            delete this.triggeredby;
-        } else {
-            this.log('setPower ' + on)
-            new_vol = on ? this.defaultVolume : 0;
-        }
-
-        let onoff = 'off';
-        if(newvol>0){
-            onoff='on';
-        }else{
-            onoff='off';
-        }
-
-        let req = http.get('http://192.168.0.190/white/2?turn='+onoff+'&brightness='+new_vol, res => {
-            let recv_data = '';
-            res.on('data', chunk => { recv_data += chunk});
-            res.on('end', () => {
-                // recv_data contains volume info.
-                let vol = JSON.parse(recv_data).brightness; // vol = [0,100]
-                let power = JSON.parse(recv_data).power;
-                this.log('white 3: ' + vol + ';' + 'power 3: ' + power);
-                this.vol = vol;
-                this.power = power;
-
-                callback(null, this.vol > 0);
-            });
-        });
-        req.on('error', err => {
-            this.log("Error in getPower: "+ err.message);
-            callback(err);
-        })
-
-        this.log('Request sent to set volume to ' + new_vol)
-        this.vol = new_vol;
-
-        this.updateUI();
-                
-        callback(null);
+    getBrightness: function(callback){
+        return;
     },
-    updateUI: function () {
-        setTimeout( () => {
-            this.bulb.getCharacteristic(Characteristic.Brightness).updateValue(this.vol);
-            this.bulb.getCharacteristic(Characteristic.On).updateValue(this.vol>0);
-        }, 100);
+    getColorTemperature: function(callback){
+        return;
     },
-    getVolume: function (callback) {
-        this.log('getVolume')
-
-        // callback with volume read in getPower
-        callback(null,this.vol)
+    setPowerState: function(on, callback){
+        return;
     },
-    setVolume: function (vol, callback) {
-        if(vol==100) {callback(null); return;}
-        this.log('setVolume ' + vol);
-
-        this.vol = vol;
-        this.triggeredby = 'slider';
-
-        callback(null);
+    setBrightness: function(brightness, callback){
+        return;
     },
-    poll: function() {
-        if(this.timer) clearTimeout(this.timer);
-        this.timer = null;
-
-        // volume update from Sonos
-        this.getPower( (err, poweron) => {  //this.vol updated.
-            // update UI
-            this.updateUI();
-        });
-
-        this.timer = setTimeout(this.poll.bind(this), this.refreshInterval)
+    setColorTemperature: function(colorTemperature, callback){
+        return;
+    },
+    parseCharacteristics: function (config) {
+        return;
     }
 }
