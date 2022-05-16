@@ -1,5 +1,5 @@
   {
-    "pluginAlias": "homebridge-shellyrgbw2tocct-igs",
+    "pluginAlias": "hellyrgbw2tocctigs",
     "pluginType": "platform",
     "singular": true,
     "schema": {
