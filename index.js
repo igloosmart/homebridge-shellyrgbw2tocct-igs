@@ -7,8 +7,8 @@ const { SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION } = require('constants');
 module.exports = function (homebridge) {
     Service = homebridge.hap.Service;
     Characteristic = homebridge.hap.Characteristic;
-    homebridge.registerAccessory('homebridge-ShellyRGBW2toCCT', 'CCT-LED1', cctLED1Accessory);
-    //homebridge.registerAccessory('homebridge-ShellyRGBW2toCCT', 'CCT-LED2', cctLED2Accessory);
+    homebridge.registerAccessory('homebridge-shellyrgbw2tocct-igs', 'CCT-LED1', cctLED1Accessory);
+    //homebridge.registerAccessory('homebridge-shellyrgbw2tocct-igs', 'CCT-LED2', cctLED2Accessory);
 };
 
 function cctLED1Accessory(log, config, api) {
@@ -53,7 +53,7 @@ cctLED1Accessory.prototype = {
         //this.log('getPower');
 
         // read white 2
-        let req = http.get('http://192.168.1.191/white/2', res => {
+        let req = http.get('http://192.168.0.190/white/2', res => {
             let recv_data = '';
             res.on('data', chunk => { recv_data += chunk});
             res.on('end', () => {
@@ -83,7 +83,14 @@ cctLED1Accessory.prototype = {
             new_vol = on ? this.defaultVolume : 0;
         }
 
-        let req = http.get('http://192.168.1.191/white/2?brightness='+new_vol, res => {
+        let onoff = 'off';
+        if(newvol>0){
+            onoff='on';
+        }else{
+            onoff='off';
+        }
+
+        let req = http.get('http://192.168.0.190/white/2?turn='+onoff+'&brightness='+new_vol, res => {
             let recv_data = '';
             res.on('data', chunk => { recv_data += chunk});
             res.on('end', () => {
