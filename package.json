@@ -1,8 +1,10 @@
 {
     "name": "homebridge-shellyrgbw2tocct-igs",
-    "version": "1.0.8",
+    "version": "1.0.10",
     "description": "This is homebridge plugin for ShellyRGBW2 changes to 2 CCT LED stripes. It is using white mode. Please see the instruction to wire and setup the device.",
-    "author": "AnsonFung@igloosmart.com",
+    "author": {
+      "name": "AnsonFung@igloosmart.com"
+    },
     "license": "MIT",
     "keywords": [
       "homebridge-plugin",
@@ -15,5 +17,12 @@
       "node": ">=10.17.0",
       "homebridge": ">=0.4.8"
     },
-    "dependencies": {}
+    "repository": {
+      "type": "git",
+      "url": "git://github.com/igloosmart/homebridge-shellyrgbw2tocct-igs.git"
+    },
+    "dependencies":{
+      "request": "^2.65.0",
+      "polling-to-event": ">=2.0.2"
+    }
   }

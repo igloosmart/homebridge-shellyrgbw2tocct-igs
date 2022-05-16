@@ -1,18 +1,6 @@
-"use strict";
-
-let Service, Characteristic, api;
-
-const _http_base = require("homebridge-http-base");
-const http = _http_base.http;
-const configParser = _http_base.configParser;
-const PullTimer = _http_base.PullTimer;
-const notifications = _http_base.notifications;
-const MQTTClient = _http_base.MQTTClient;
-const Cache = _http_base.Cache;
-const utils = _http_base.utils;
-
-const packageJSON = require("./package.json");
-
+var Service, Characteristic;
+var request = require("request");
+var pollingtoevent = require("polling-to-event");
 
 module.exports = function (homebridge) {
     Service = homebridge.hap.Service;
@@ -21,19 +9,21 @@ module.exports = function (homebridge) {
     api = homebridge;
 
     homebridge.registerAccessory('homebridge-shellyrgbw2tocct-igs', 'CCT-LED1', cctLED1Accessory);
-    //homebridge.registerAccessory('homebridge-shellyrgbw2tocct-igs', 'CCT-LED2', cctLED2Accessory);
 };
 
 function cctLED1Accessory(log, config) {
     this.log = log;
-    this.name = config.name;
-    this.debug = config.debug || false;
+    this.name = config["name"];
+    this.httpAddress = config["http"];
+    this.ledWhite = config["white"];
+    this.ledYellow = config["yellow"];
 
-    const success = this.parseCharacteristics(config);
-    if (!success) {
-        this.log.warn("Aborting...");
-        return;
-    }
+    var informationService = new Service.AccessoryInformation();
+
+    informationService
+    .setCharacteristic(Characteristic.Manufacturer, "Shelly")
+    .setCharacteristic(Characteristic.Model, "Shelly RGBW2")
+    .setCharacteristic(Characteristic.SerialNumber, "CCT-igloosmart");
 
     const homebridgeService = new Service.Lightbulb(this.name);
     homebridgeService.getCharacteristic(Characteristic.On)
