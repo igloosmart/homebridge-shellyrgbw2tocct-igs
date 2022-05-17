@@ -16,18 +16,6 @@
           "type": "string",
           "required": true,
           "default": "http://192.168.0.190"
-        },
-        "white":{
-          "title": "Yellow on port",
-          "type": "integer",
-          "required": true,
-          "default": 2
-        },
-        "yellow":{
-          "title": "White on port",
-          "type": "integer",
-          "required": true,
-          "default": 3
         }
       }
     }
