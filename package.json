@@ -1,45 +1,29 @@
 {
-  "private": true,
   "displayName": "Homebridge Shelly RGBW2 CCT",
   "name": "homebridge-shellyrgbw2tocct-igs",
-  "version": "1.0.15",
+  "version": "0.1.6",
   "description": "This is homebridge plugin for ShellyRGBW2 changes to 2 CCT LED stripes. It is using white mode. Please see the instruction to wire and setup the device.",
-  "license": "Apache-2.0",
+  "license": "MIT",
+  "keywords": [
+    "homebridge-plugin",
+    "igloosmart",
+    "CCT",
+    "Shelly",
+    "RGBW2"
+  ],
+  "engines": {
+    "node": ">=0.12.0",
+    "homebridge": ">=0.2.0"
+  },
+  "author": {
+    "name": "Anson Fung @ igloosmart"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/igloosmart/homebridge-shellyrgbw2tocct-igs.git"
   },
-  "bugs": {
-    "url": "https://github.com/igloosmart/homebridge-shellyrgbw2tocct-igs/issues"
-  },
-  "engines": {
-    "node": ">=14.18.1",
-    "homebridge": ">=1.3.5"
-  },
-  "main": "dist/index.js",
-  "scripts": {
-    "lint": "eslint src/**.ts --max-warnings=0",
-    "watch": "npm run build && npm link && nodemon",
-    "build": "rimraf ./dist && tsc",
-    "prepublishOnly": "npm run lint && npm run build"
-  },
-  "keywords": [
-    "homebridge-plugin",
-    "shelly",
-    "igloosmart",
-    "RGBW2",
-    "CCT"
-  ],
-  "dependencies": {},
-  "devDependencies": {
-    "@types/node": "^16.10.9",
-    "@typescript-eslint/eslint-plugin": "^5.0.0",
-    "@typescript-eslint/parser": "^5.0.0",
-    "eslint": "^8.0.1",
-    "homebridge": "^1.3.5",
-    "nodemon": "^2.0.13",
-    "rimraf": "^3.0.2",
-    "ts-node": "^10.3.0",
-    "typescript": "^4.4.4"
+  "dependencies": {
+    "request": "^2.65.0",
+	  "polling-to-event": ">=2.0.2"
   }
 }
